@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/blog/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-icon-180x180.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/blog/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Muse',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="题目描述 给定两个大小为 m 和 n 的有序数组 nums1 和 nums2。 请你找出这两个有序数组的中位数，并且要求算法的时间复杂度为 O(log(m + n))。 你可以假设 nums1 和 nums2 不会同时为空。 示例 1：  1234nums1 = [1, 3]nums2 = [2]则中位数是 2.0  示例 2：  1234nums1 = [1, 2]nums2 = [3, 4]则">
+<meta name="keywords" content="LeetCode">
+<meta property="og:type" content="article">
+<meta property="og:title" content="算法：寻找两个有序数组的中位数">
+<meta property="og:url" content="https://maoqxxmm.github.io/blog/2019/02/17/算法：寻找两个有序数组的中位数/index.html">
+<meta property="og:site_name" content="毛球的博客">
+<meta property="og:description" content="题目描述 给定两个大小为 m 和 n 的有序数组 nums1 和 nums2。 请你找出这两个有序数组的中位数，并且要求算法的时间复杂度为 O(log(m + n))。 你可以假设 nums1 和 nums2 不会同时为空。 示例 1：  1234nums1 = [1, 3]nums2 = [2]则中位数是 2.0  示例 2：  1234nums1 = [1, 2]nums2 = [3, 4]则">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-02-17T14:53:53.768Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="算法：寻找两个有序数组的中位数">
+<meta name="twitter:description" content="题目描述 给定两个大小为 m 和 n 的有序数组 nums1 和 nums2。 请你找出这两个有序数组的中位数，并且要求算法的时间复杂度为 O(log(m + n))。 你可以假设 nums1 和 nums2 不会同时为空。 示例 1：  1234nums1 = [1, 3]nums2 = [2]则中位数是 2.0  示例 2：  1234nums1 = [1, 2]nums2 = [3, 4]则">
+
+
+
+
+
+
+  <link rel="canonical" href="https://maoqxxmm.github.io/blog/2019/02/17/算法：寻找两个有序数组的中位数/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>算法：寻找两个有序数组的中位数 | 毛球的博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">毛球的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://maoqxxmm.github.io/blog/blog/2019/02/17/算法：寻找两个有序数组的中位数/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="毛球">
+      <meta itemprop="description" content="你再不来，我要下雪了。">
+      <meta itemprop="image" content="/blog/images/apple-icon-180x180.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="毛球的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">算法：寻找两个有序数组的中位数
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-02-17 22:13:52 / 修改时间：22:53:53" itemprop="dateCreated datePublished" datetime="2019-02-17T22:13:52+08:00">2019-02-17</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/blog/categories/代码/" itemprop="url" rel="index"><span itemprop="name">代码</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/blog/categories/代码/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h2><blockquote>
+<p>给定两个大小为 m 和 n 的有序数组 nums1 和 nums2。</p>
+<p>请你找出这两个有序数组的中位数，并且要求算法的时间复杂度为 O(log(m + n))。</p>
+<p>你可以假设 nums1 和 nums2 不会同时为空。</p>
+<p>示例 1：</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nums1 = [1, 3]</span><br><span class="line">nums2 = [2]</span><br><span class="line"></span><br><span class="line">则中位数是 2.0</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>示例 2：</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nums1 = [1, 2]</span><br><span class="line">nums2 = [3, 4]</span><br><span class="line"></span><br><span class="line">则中位数是 (2 + 3)/2 = 2.5</span><br></pre></td></tr></table></figure>
+<p><a href="https://leetcode-cn.com/problems/median-of-two-sorted-arrays/" target="_blank" rel="noopener">题目链接</a></p>
+<a id="more"></a>
+<h2 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h2><h3 id="我一开始的想法（不符合时间复杂度要求）"><a href="#我一开始的想法（不符合时间复杂度要求）" class="headerlink" title="我一开始的想法（不符合时间复杂度要求）"></a>我一开始的想法（不符合时间复杂度要求）</h3><p>题目的意思就是把 2 个有序数组合并后，找到那个中位数。</p>
+<p>既然是有序数组，那么就直接遍历第二个数组，一个个往第一个数组里插入。因为是有序的，所以每次后一个数字插入的时候，查询的下标都会从上一个插入的下标+1 开始。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @param &#123;number[]&#125; nums1</span></span><br><span class="line"><span class="comment"> * @param &#123;number[]&#125; nums2</span></span><br><span class="line"><span class="comment"> * @return &#123;number&#125;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">var</span> findMedianSortedArrays = <span class="function"><span class="keyword">function</span>(<span class="params">nums1, nums2</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> searchIndex = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; nums2.length; i++) &#123;</span><br><span class="line">    <span class="keyword">const</span> n2 = nums2[i];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> j = searchIndex; j &lt; nums1.length; j++) &#123;</span><br><span class="line">      <span class="keyword">const</span> n1 = nums1[j];</span><br><span class="line">      <span class="keyword">if</span> (n1 &gt;= n2) &#123;</span><br><span class="line">        nums1.splice(j, <span class="number">0</span>, n2);</span><br><span class="line">        searchIndex = j + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (j === nums1.length) &#123;</span><br><span class="line">      nums1.push(n2);</span><br><span class="line">      searchIndex = nums1.length;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">const</span> length = nums1.length;</span><br><span class="line">  <span class="keyword">if</span> (length % <span class="number">2</span> === <span class="number">1</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> nums1[(length - <span class="number">1</span>) / <span class="number">2</span>];</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> (nums1[length / <span class="number">2</span>] + nums1[length / <span class="number">2</span> - <span class="number">1</span>]) / <span class="number">2</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>通过倒是通过了，但时间复杂度大概是 O(m+n) 的样子，不符合题目要求，因此还是看看官方思路。</p>
+<h2 id="递归法（官方思路）"><a href="#递归法（官方思路）" class="headerlink" title="递归法（官方思路）"></a>递归法（官方思路）</h2><p>具体的思路就看链接了，这里大概解释一下解法。</p>
+<p>首先明确 <strong>中位数</strong> 的概念：</p>
+<blockquote>
+<p>将一个集合划分为两个长度相等的子集，其中一个子集中的元素总是大于另一个子集中的元素。</p>
+</blockquote>
+<p>我们现在有 <code>A</code> 和 <code>B</code> 这 2 个有序数组，把 <code>A</code> 划分为 <code>[A(0), A(1), ..., A(i-1)]</code> 和 <code>[A(i), A(i+1), ..., A[m-1]]</code> 2 个部分，假设 A 有 <code>m</code> 个元素，那么 <code>i ~ [0, m]</code>。同理，划分 B，<code>j ~ [0, n]</code>。然后，我们把 <code>left_A</code> 和 <code>left_B</code> 合并，<code>right_A</code> 和 <code>right_B</code> 合并，最后得到了 <code>left_part</code> 和 <code>right_part</code>。</p>
+<p>如果，符合了以下条件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">len(left_part) = len(right_part)</span><br><span class="line">max(left_part) &lt;= min(right_part)</span><br></pre></td></tr></table></figure>
+<p>那么，我们就说，找到了这个中位数。它就是 <code>(max(left_part) + min(right_part)) / 2</code></p>
+<p>为了达到这个条件，我们需要保证：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">i + j = m - i + n - j 或 m - i + n - j + 1 （奇数情况）</span><br><span class="line">B(j - 1) &lt;= A(i) &amp;&amp; A(i - 1) &lt;= B(j)</span><br></pre></td></tr></table></figure>
+<p>我们假设 <code>n &gt;= m</code> ，那么把条件 1 进行变形：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">0 &lt;= i &lt;= m,</span><br><span class="line">j = (m + n + 1) / 2 - i</span><br></pre></td></tr></table></figure>
+<p>这个假设保证了 <code>j &gt;= 0</code> 。</p>
+<p>那么接下来的事情就变成了，在 <code>[0, m]</code> 中找到 <code>i</code> ，满足：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">B(j - 1) &lt;= A(i) &amp;&amp; A(i - 1) &lt;= B(j)</span><br><span class="line">其中 j = (m + n + 1) / 2 - i</span><br></pre></td></tr></table></figure>
+<p>为了满足时间复杂度 <code>O(log(min(m, n)))</code> ，我们采用二分法在 <code>[0, m]</code> 的区间内查找。</p>
+<p>基本就可以理解这个算法了，官方思路里剩下的内容都比较好懂了。</p>
+<p>示例：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @param &#123;number[]&#125; nums1</span></span><br><span class="line"><span class="comment"> * @param &#123;number[]&#125; nums2</span></span><br><span class="line"><span class="comment"> * @return &#123;number&#125;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">var</span> findMedianSortedArrays = <span class="function"><span class="keyword">function</span>(<span class="params">nums1, nums2</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> m = nums1.length;</span><br><span class="line">  <span class="keyword">var</span> n = nums2.length;</span><br><span class="line">  <span class="keyword">if</span> (m &gt; n) &#123;</span><br><span class="line">    <span class="keyword">var</span> tmp = nums1;</span><br><span class="line">    nums1 = nums2;</span><br><span class="line">    nums2 = tmp;</span><br><span class="line">    tmp = m;</span><br><span class="line">    m = n;</span><br><span class="line">    n = tmp;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">var</span> iMin = <span class="number">0</span>,</span><br><span class="line">    iMax = m,</span><br><span class="line">    halfLen = <span class="built_in">Math</span>.floor((m + n + <span class="number">1</span>) / <span class="number">2</span>);</span><br><span class="line">  <span class="keyword">while</span> (iMin &lt;= iMax) &#123;</span><br><span class="line">    <span class="keyword">var</span> i = <span class="built_in">Math</span>.floor((iMin + iMax) / <span class="number">2</span>);</span><br><span class="line">    <span class="keyword">var</span> j = halfLen - i;</span><br><span class="line">    <span class="keyword">if</span> (i &lt; iMax &amp;&amp; nums2[j - <span class="number">1</span>] &gt; nums1[i]) &#123;</span><br><span class="line">      iMin = i + <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (i &gt; iMin &amp;&amp; nums1[i - <span class="number">1</span>] &gt; nums2[j]) &#123;</span><br><span class="line">      iMax = i - <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">var</span> maxLeft = <span class="number">0</span>;</span><br><span class="line">      <span class="keyword">if</span> (i == <span class="number">0</span>) &#123;</span><br><span class="line">        maxLeft = nums2[j - <span class="number">1</span>];</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (j == <span class="number">0</span>) &#123;</span><br><span class="line">        maxLeft = nums1[i - <span class="number">1</span>];</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        maxLeft = <span class="built_in">Math</span>.max(nums1[i - <span class="number">1</span>], nums2[j - <span class="number">1</span>]);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> ((m + n) % <span class="number">2</span> == <span class="number">1</span>) <span class="keyword">return</span> maxLeft;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">var</span> minRight = <span class="number">0</span>;</span><br><span class="line">      <span class="keyword">if</span> (i == m) &#123;</span><br><span class="line">        minRight = nums2[j];</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (j == n) &#123;</span><br><span class="line">        minRight = nums1[i];</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        minRight = <span class="built_in">Math</span>.min(nums1[i], nums2[j]);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> (maxLeft + minRight) / <span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/LeetCode/" rel="tag"># LeetCode</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2019/02/12/算法：无重复字符的最长子串/" rel="next" title="算法：无重复字符的最长子串">
+                <i class="fa fa-chevron-left"></i> 算法：无重复字符的最长子串
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/blog/images/apple-icon-180x180.png" alt="毛球">
+            
+              <p class="site-author-name" itemprop="name">毛球</p>
+              <p class="site-description motion-element" itemprop="description">你再不来，我要下雪了。</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/blog/archives/">
+                
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/blog/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/blog/tags/index.html">
+                    
+                    
+                      
+                    
+                    <span class="site-state-item-count">1</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#题目描述"><span class="nav-number">1.</span> <span class="nav-text">题目描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解题思路"><span class="nav-number">2.</span> <span class="nav-text">解题思路</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#我一开始的想法（不符合时间复杂度要求）"><span class="nav-number">2.1.</span> <span class="nav-text">我一开始的想法（不符合时间复杂度要求）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#递归法（官方思路）"><span class="nav-number">3.</span> <span class="nav-text">递归法（官方思路）</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">毛球</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v6.7.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/blog/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/blog/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/blog/js/src/schemes/muse.js?v=6.7.0"></script>
+
+
+
+  
+  <script src="/blog/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/blog/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/blog/js/src/bootstrap.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
