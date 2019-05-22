@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/blog/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-icon-180x180.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/blog/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Muse',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="原文链接 前言随着 React 应用变得越来越复杂，其稳定性也会随之变差。无论是抽象、添加功能或者是重构，都可能会引起 bug，更别说多名开发者共同维护项目的情况了。所以，我们就需要自动化测试的帮助。 本文将会介绍自动化测试工具、我们可以在 React 中进行哪些测试以及为什么需要这么做。让我们首先来介绍 Jest，这是最常用的由 FB 开发的JS 测试框架，FB 也是用它来给 React 应用进">
+<meta name="keywords" content="翻译">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Jest和Enzyme进行React测试:入门">
+<meta property="og:url" content="https://maoqxxmm.github.io/blog/2019/05/22/Notes/「翻译」使用 Jest 和 Enzyme 进行 React 测试：介绍/index.html">
+<meta property="og:site_name" content="毛球的博客">
+<meta property="og:description" content="原文链接 前言随着 React 应用变得越来越复杂，其稳定性也会随之变差。无论是抽象、添加功能或者是重构，都可能会引起 bug，更别说多名开发者共同维护项目的情况了。所以，我们就需要自动化测试的帮助。 本文将会介绍自动化测试工具、我们可以在 React 中进行哪些测试以及为什么需要这么做。让我们首先来介绍 Jest，这是最常用的由 FB 开发的JS 测试框架，FB 也是用它来给 React 应用进">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://maoqxxmm.github.io/blog/2019/05/22/Notes/「翻译」使用%20Jest%20和%20Enzyme%20进行%20React%20测试：介绍/images/BC3BB459-597F-44FF-9475-7B743D29DBB4.png">
+<meta property="og:image" content="https://maoqxxmm.github.io/blog/2019/05/22/Notes/「翻译」使用%20Jest%20和%20Enzyme%20进行%20React%20测试：介绍/images/95A1F546-0B48-432B-9F4E-A744ABAA2B46.png">
+<meta property="og:updated_time" content="2019-05-22T15:01:11.925Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用Jest和Enzyme进行React测试:入门">
+<meta name="twitter:description" content="原文链接 前言随着 React 应用变得越来越复杂，其稳定性也会随之变差。无论是抽象、添加功能或者是重构，都可能会引起 bug，更别说多名开发者共同维护项目的情况了。所以，我们就需要自动化测试的帮助。 本文将会介绍自动化测试工具、我们可以在 React 中进行哪些测试以及为什么需要这么做。让我们首先来介绍 Jest，这是最常用的由 FB 开发的JS 测试框架，FB 也是用它来给 React 应用进">
+<meta name="twitter:image" content="https://maoqxxmm.github.io/blog/2019/05/22/Notes/「翻译」使用%20Jest%20和%20Enzyme%20进行%20React%20测试：介绍/images/BC3BB459-597F-44FF-9475-7B743D29DBB4.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://maoqxxmm.github.io/blog/2019/05/22/Notes/「翻译」使用 Jest 和 Enzyme 进行 React 测试：介绍/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>使用Jest和Enzyme进行React测试:入门 | 毛球的博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">毛球的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://maoqxxmm.github.io/blog/blog/2019/05/22/Notes/「翻译」使用 Jest 和 Enzyme 进行 React 测试：介绍/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="毛球">
+      <meta itemprop="description" content="你再不来，我要下雪了。">
+      <meta itemprop="image" content="/blog/images/apple-icon-180x180.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="毛球的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">使用Jest和Enzyme进行React测试:入门
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-22 22:27:37" itemprop="dateCreated datePublished" datetime="2019-05-22T22:27:37+08:00">2019-05-22</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/blog/categories/笔记/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="https://medium.com/@rossbulat/testing-in-react-with-jest-and-enzyme-an-introduction-99ce047dfcf8" target="_blank" rel="noopener">原文链接</a></p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>随着 React 应用变得越来越复杂，其稳定性也会随之变差。无论是抽象、添加功能或者是重构，都可能会引起 bug，更别说多名开发者共同维护项目的情况了。所以，我们就需要自动化测试的帮助。</p>
+<p>本文将会介绍自动化测试工具、我们可以在 React 中进行哪些测试以及为什么需要这么做。让我们首先来介绍 Jest，这是最常用的由 FB 开发的JS 测试框架，FB 也是用它来给 React 应用进行测试。</p>
+<a id="more"></a>
+<p>介绍 Jest<br>首先介绍的工具是 Jest。Jest 是一个基于 Node 的测试工具，快速并行运行。它可以使用在任何由 CRA 创建的项目。在你的 app 目录下，在终端运行 <code>npm test</code> ，就会初始化 Jest，然后开始在观察模式下进行测试。这意味着在你开发的时候，任何文件的改动都会引起重新测试。</p>
+<p><em>如果不是通过 CRA 创建的项目呢？</em></p>
+<p>如果没用 CRA，那么只需要通过 npm 或者 yarn 来安装 Jest。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">yarn add --dev jest</span><br><span class="line">#or</span><br><span class="line">npm install --save-dev jest</span><br></pre></td></tr></table></figure></p>
+<p>为了能通过  <code>npm test</code>  来运行 jest，在你的 package.json 文件的  <code>scripts</code>  块中添加一个  <code>test</code>。<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">scripts: &#123;</span><br><span class="line"> "test": "jest",</span><br><span class="line"> ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>不过，在 CRA 环境下长得有点不同，它使用  <code>react-scripts</code>  来代替  <code>jest</code> 。<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">scripts: &#123;</span><br><span class="line"> "test": "react-scripts test",</span><br><span class="line"> ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>试试在你的终端运行  <code>npm test</code> 。你现在就会处于观察模式，可以看到一句话：「No tests found related to files changed since last commit.」，后面跟着一些快捷键来运行不同方式的测试。</p>
+<p>那么，在你的 React 项目里引入测试的最佳实践是什么呢？在介绍更多有用的工具前，我们先试试这个。</p>
+<h2 id="开始使用-Jest"><a href="#开始使用-Jest" class="headerlink" title="开始使用 Jest"></a>开始使用 Jest</h2><p>在你的项目里，Jest 通过文件名来找到测试文件，不论他们被藏得有多深。这里有 3 种命名方式：</p>
+<ul>
+<li>任何以  <code>.test.js</code>  或者  <code>.spec.js</code>  作为扩展名的文件。它一般就放在组件文件旁边，比如  <code>App.js</code>  旁边放一个  <code>App.test.js</code> 。它的好处就是查找和引用声明比较方便。</li>
+<li>任何在  <code>__tests__</code>  文件夹里的  <code>.js</code>  文件。如果你需要用多个测试文件来测试一个特定的组件或组件文件夹，那么一个  <code>__tests__</code>  文件夹就能提供一个更连贯的结构，使你的测试和组件文件不至于混在一起。这个更适合大型项目。</li>
+</ul>
+<p>使用哪种方式都随你，也取决于你的项目情况。</p>
+<p>现在让我们来写一个简单的测试来学学 Jest 的语法。让我们在  <code>App.js</code>  旁边添加一个  <code>App.test.js</code>  文件。这个测试现在还不会跟  <code>App.js</code>  相关，但会引入一些 Jest 的关键方法：<code>describe()</code>  、<code>it()</code>  、<code>expect()</code> 。</p>
+<p><em>App.test.js:</em></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">describe(<span class="string">'Examining the syntax of Jest tests'</span>, () =&gt; &#123;</span><br><span class="line">   </span><br><span class="line">  it(<span class="string">'sums numbers'</span>, () =&gt; &#123;</span><br><span class="line">      expect(<span class="number">1</span> + <span class="number">2</span>).toEqual(<span class="number">3</span>);</span><br><span class="line">      expect(<span class="number">2</span> + <span class="number">2</span>).toEqual(<span class="number">4</span>);</span><br><span class="line">   &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>上面第一眼看过去，你会发现这是个显而易见的测试，非常好。对测试来说，易读性非常重要。</p>
+<p>现在，保存一下，如果你已经跑起来了 Jest，那么就会收到一个类似于这样的信息：</p>
+<p><img src="/blog/2019/05/22/Notes/「翻译」使用 Jest 和 Enzyme 进行 React 测试：介绍/images/BC3BB459-597F-44FF-9475-7B743D29DBB4.png" alt=""></p>
+<p>现在我们来理解一下上面这个例子里使用的语法：</p>
+<ul>
+<li><code>describe()</code> : 这是一个可选方法，它可以用来包裹一组测试，让我们通过文字来描述它所包裹的这组测试的行为。正如截图所示，这些文字出现在了测试结果的头部。</li>
+<li><code>it()</code> : 在本质上和  <code>describe()</code>  是类似的。<code>it()</code>  让我们通过文字来描述一个测试需要成功实现什么。你可能会发现在 <a href="https://jestjs.io/docs/en/getting-started" target="_blank" rel="noopener">Jest documentation</a>  中使用的是  <code>test()</code>  而不是  <code>it()</code> 。这两个都是有效的。</li>
+<li><code>expect()</code>  和  <code>.toEqual()</code> : 这里我们进行的是测试本身。<code>expect()</code>  方法包裹了一个函数的执行结果，<code>toEqual()</code>  则包裹了一个应该和  <code>expect()</code>  一致的值。</li>
+</ul>
+<hr>
+<p><code>expect()</code>  创造了一个「断言」：什么是「断言」？</p>
+<p><code>expect()</code>  是一个全局的 Jest 函数，用来创建「断言」。断言是一个返回布尔值的函数，并且我们希望它返回的是 true —— 因此称为  <code>expect</code>。如果返回了 false，那么就代表这个测试没通过，同时  <code>it()</code>  或者  <code>test()</code>  块里的执行就会停止。</p>
+<hr>
+<p><code>toEqual()</code>  是一个匹配器：什么是匹配器？</p>
+<p><code>toEqual()</code>  被称为「匹配器」。匹配器是一个返回值必须和  <code>expect()</code>  预期结果一致的函数。Jest 的文档里列举了全部的匹配器（<a href="https://jestjs.io/docs/en/expect.html#content" target="_blank" rel="noopener">链接</a> ），包括  <code>toContain</code>、<code>toBeFalsy</code>、<code>toMatch(regexpOrString)</code>  和 <code>toThrow(error)</code>。去了解哪些可以优化你的测试语法是值得的。</p>
+<hr>
+<p>我们在终端得到每个测试的结果。绿色代表成功，红色代表失败。</p>
+<p>为了得到一个失败结果（希望不要有！），我们来改成  <code>expect(2 + 2).toEqual(5)</code>：</p>
+<p><img src="/blog/2019/05/22/Notes/「翻译」使用 Jest 和 Enzyme 进行 React 测试：介绍/images/95A1F546-0B48-432B-9F4E-A744ABAA2B46.png" alt=""></p>
+<p>我们的终端显示了一些有用信息，包括挂在哪个文件，第几行，什么代码。</p>
+<h2 id="为什么要测试-2-个甚至多个加法，而不是一个就够了？"><a href="#为什么要测试-2-个甚至多个加法，而不是一个就够了？" class="headerlink" title="为什么要测试 2 个甚至多个加法，而不是一个就够了？"></a>为什么要测试 2 个甚至多个加法，而不是一个就够了？</h2><p>我们的第一个例子测试了2次加法，一次是 1 + 2，另一次是 2 + 2。这非常重要。为了解释原因，现在我们自己来实现一个加法：</p>
+<p><em>./math.js:</em></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> sum = <span class="function">(<span class="params">x, y</span>) =&gt;</span> x + y;</span><br></pre></td></tr></table></figure>
+<p><em>./App.test.js:</em></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123;sum&#125; <span class="keyword">from</span> <span class="string">'./math'</span>;</span><br><span class="line">describe(<span class="string">'Examining the syntax of Jest tests'</span>, () =&gt; &#123;</span><br><span class="line">   </span><br><span class="line">  it(<span class="string">'sums numbers'</span>, () =&gt; &#123;</span><br><span class="line">      expect(sum(<span class="number">1</span>, <span class="number">2</span>)).toEqual(<span class="number">3</span>);</span><br><span class="line">      expect(sum(<span class="number">2</span>, <span class="number">2</span>)).toEqual(<span class="number">4</span>);</span><br><span class="line">   &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>当然，现在还是会成功通过测试的。但假如我们把  <code>sum()</code>  做一点改动：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> sum = <span class="function">(<span class="params">x, y</span>) =&gt;</span> <span class="number">3</span>;</span><br></pre></td></tr></table></figure>
+<p>我们把 sum 函数的返回值固定为 3。现在，加入我们只测试 1 + 2 的和，这个测试就会顺利通过。但这并不是我们想要的，它只返回 3！</p>
+<p>为什么呢？在开发的时候，错误就会出现。我可能想要测试一个获取请求方法，当时写死了返回值，之后就忘记切换回动态调用了。我也可能在编写大量数据库调用方法的时候，忘记在占位符里插入查询语句。对于任何情况来说，使用  <code>it()</code>  或  <code>test()</code>  对每个函数或组件执行多种断言总是非常有用的。</p>
+<p>以上，我们测试了普通 JS 函数。现在，来试试如何测试 React 组件吧。为了实现这个需求，我们需要引入另一个配合 Jest 的包：<a href="https://airbnb.io/enzyme/" target="_blank" rel="noopener">Enzyme</a> 。</p>
+<h2 id="使用-Enzyme-来测试-React-组件"><a href="#使用-Enzyme-来测试-React-组件" class="headerlink" title="使用 Enzyme 来测试 React 组件"></a>使用 Enzyme 来测试 React 组件</h2><p>Enzyme 是一个测试工具包，由 Airbnb 开发，它让测试 React 组件变得更加方便。React 官方确实有提供内置测试工具：<a href="https://reactjs.org/docs/test-utils.html" target="_blank" rel="noopener">testing suite</a> ，但这些工具又冗长又粗糙，反而是 Enzyme 提供了更优雅的方法来执行我们的测试。</p>
+<p>与 Jest 不同的是，Enzyme 并没有被 CRA 引入。安装 Enzyme 方法如下：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">yarn add --dev enzyme enzyme-adapter-react<span class="number">-16</span> react-test-renderer</span><br><span class="line">#or</span><br><span class="line">npm install --save-dev enzyme enzyme-adapter-react<span class="number">-16</span> react-test-renderer</span><br></pre></td></tr></table></figure></p>
+<p>安装的适配器需要跟随使用的 React 版本。这里我们是以 React 16 为例，当然早期版本也有提供（ <a href="https://airbnb.io/enzyme/#installation" target="_blank" rel="noopener">链接</a> ）。</p>
+<p>我们需要一个  <code>src/setupTests.js</code>  文件来使用 Enzyme，它指定 Enzyme 运行我们刚刚安装的适配器。保证这个文件在使用 Enzyme 前被引入。</p>
+<p><em>src/setupTest.js:</em></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; configure &#125; <span class="keyword">from</span> <span class="string">'enzyme'</span>;</span><br><span class="line"><span class="keyword">import</span> Adapter <span class="keyword">from</span> <span class="string">'enzyme-adapter-react-16'</span>;</span><br><span class="line"></span><br><span class="line">configure(&#123; <span class="attr">adapter</span>: <span class="keyword">new</span> Adapter() &#125;);</span><br></pre></td></tr></table></figure>
+<p>现在，我们就可以开始使用 Enzyme 来进行测试了。举个例子，如果我们想要测试  <code>&lt;App /&gt;</code>  组件，那么就可以在  <code>App.test.js</code>  文件中加入：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; shallow &#125; <span class="keyword">from</span> <span class="string">'enzyme'</span>;</span><br><span class="line"><span class="keyword">import</span> App <span class="keyword">from</span> <span class="string">'./App'</span>;</span><br><span class="line"></span><br><span class="line">describe(<span class="string">'First React component test with Enzyme'</span>, () =&gt; &#123;</span><br><span class="line">   it(<span class="string">'renders without crashing'</span>, () =&gt; &#123;</span><br><span class="line">      shallow(&lt;App /&gt;);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>这里呢我们使用了  <code>shallow()</code>  断言方法。<code>shallow()</code>  会测试我们提供的组件，并且忽略任何它的子组件。如果我们有个  <code>&lt;Header /&gt;</code>  和  <code>&lt;Footer /&gt;</code>  在  <code>&lt;App /&gt;</code>  里，他们都会在测试中被忽略。</p>
+<p><code>shallow()</code>  属于单元测试。单元测试指的是只测试一个函数的测试。当我们测试的函数依赖于其他函数的时候，就成为了集成测试。同样的，如果我们测试一整个 React 组件树，那么就变成了一个集成测试。</p>
+<p>在 Enzyme 中，我们可以通过  <code>mount()</code>  来实现这样的测试。它是一种完整渲染的方式，把整个组件树和生命周期考虑进去。</p>
+<h2 id="Jest-如何在一个-DOM-环境里测试？"><a href="#Jest-如何在一个-DOM-环境里测试？" class="headerlink" title="Jest 如何在一个 DOM 环境里测试？"></a>Jest 如何在一个 DOM 环境里测试？</h2><p>我们知道，Jest 运行在 node 环境里，但 React 组件需要在 DOM 环境里进行测试。那么怎么办呢？使用 <a href="https://github.com/jsdom/jsdom" target="_blank" rel="noopener">jsdom</a> 。这是一个 WHATWG DOM 和 HTML 标准的 JS 实践。</p>
+<p>jsdom 在我们的 CRA 测试环境里已经默认开启了，因此，我们可以在测试的时候，使用包括  <code>window</code>  和  <code>document</code>  等全局变量来模仿浏览器行为。虽然 jsdom 允许我们为组件进行单元和集成测试，但不推荐进行端到端的浏览器测试。还是要跑起一个真实的浏览器驱动去看结果。</p>
+<p>你可以在 package.json 的命令里使用  <code>--env=node</code>  标识来关闭 jsdom，但如果要进行集成测试的话就不适合了。因为需要有真实渲染。</p>
+<p>CRA 文档里高亮了你可以关闭 jsdom 的情况（ <a href="https://facebook.github.io/create-react-app/docs/running-tests#disabling-jsdom" target="_blank" rel="noopener">链接</a> ）。关闭它可以让你的测试跑得更快。</p>
+<h2 id="测试术语"><a href="#测试术语" class="headerlink" title="测试术语"></a>测试术语</h2><p>现在是时候来看看 React 测试的主要术语了。先来看一些常用的：</p>
+<ul>
+<li>单元测试：测试独立的函数，或一个 React 组件。Enzyme 的  <code>shallow()</code>  方法是单元测试。</li>
+<li>集成测试：测试多个函数一起工作，或者一整个 React 组件树。Enzyme 的  <code>mount()</code>  方法是集成测试。</li>
+<li>Mock 函数：重定义一个函数，特别是在测试的时候生成一个结果。比如返回定值，而不是依赖于获取请求或数据库调用。它可以防止我们之前发现的那个返回定值的求和问题。Mock 函数可以定义成： <code>jest.fn(() =&gt; { // function here})</code></li>
+</ul>
+<p>测试术语：</p>
+<ul>
+<li>冒烟测试：验证一个组件正常渲染。<code>shallow()</code>  和  <code>mount()</code>  都是。</li>
+<li>浅渲染：渲染组件不带子组件。<code>shallow()</code>  是。</li>
+<li>完整渲染：渲染完整树。<code>mount()</code>  是。</li>
+<li>静态测试：渲染组件到静态 HTML 文件，然后分析结果。Enzyme 的  <code>render()</code>  方法用来静态测试。</li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/翻译/" rel="tag"># 翻译</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2019/03/26/Notes/Redux简单实现/" rel="next" title="Redux简单实现">
+                <i class="fa fa-chevron-left"></i> Redux简单实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/blog/images/apple-icon-180x180.png" alt="毛球">
+            
+              <p class="site-author-name" itemprop="name">毛球</p>
+              <p class="site-description motion-element" itemprop="description">你再不来，我要下雪了。</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/blog/archives/">
+                
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/blog/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/blog/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始使用-Jest"><span class="nav-number">2.</span> <span class="nav-text">开始使用 Jest</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么要测试-2-个甚至多个加法，而不是一个就够了？"><span class="nav-number">3.</span> <span class="nav-text">为什么要测试 2 个甚至多个加法，而不是一个就够了？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-Enzyme-来测试-React-组件"><span class="nav-number">4.</span> <span class="nav-text">使用 Enzyme 来测试 React 组件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Jest-如何在一个-DOM-环境里测试？"><span class="nav-number">5.</span> <span class="nav-text">Jest 如何在一个 DOM 环境里测试？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试术语"><span class="nav-number">6.</span> <span class="nav-text">测试术语</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">毛球</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v6.7.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/blog/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/blog/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/blog/js/src/schemes/muse.js?v=6.7.0"></script>
+
+
+
+  
+  <script src="/blog/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/blog/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/blog/js/src/bootstrap.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
