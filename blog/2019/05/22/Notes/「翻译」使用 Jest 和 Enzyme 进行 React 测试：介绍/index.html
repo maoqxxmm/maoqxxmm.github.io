@@ -104,13 +104,13 @@
 <meta property="og:site_name" content="毛球的博客">
 <meta property="og:description" content="原文链接 前言随着 React 应用变得越来越复杂，其稳定性也会随之变差。无论是抽象、添加功能或者是重构，都可能会引起 bug，更别说多名开发者共同维护项目的情况了。所以，我们就需要自动化测试的帮助。 本文将会介绍自动化测试工具、我们可以在 React 中进行哪些测试以及为什么需要这么做。让我们首先来介绍 Jest，这是最常用的由 FB 开发的JS 测试框架，FB 也是用它来给 React 应用进">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://maoqxxmm.github.io/images/BC3BB459-597F-44FF-9475-7B743D29DBB4.png">
-<meta property="og:image" content="https://maoqxxmm.github.io/images/95A1F546-0B48-432B-9F4E-A744ABAA2B46.png">
-<meta property="og:updated_time" content="2019-05-22T15:12:05.380Z">
+<meta property="og:image" content="https://maoqxxmm.github.io/blog/images/BC3BB459-597F-44FF-9475-7B743D29DBB4.png">
+<meta property="og:image" content="https://maoqxxmm.github.io/blog/images/95A1F546-0B48-432B-9F4E-A744ABAA2B46.png">
+<meta property="og:updated_time" content="2019-05-22T15:13:57.040Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="「翻译」使用Jest和Enzyme进行React测试:入门">
 <meta name="twitter:description" content="原文链接 前言随着 React 应用变得越来越复杂，其稳定性也会随之变差。无论是抽象、添加功能或者是重构，都可能会引起 bug，更别说多名开发者共同维护项目的情况了。所以，我们就需要自动化测试的帮助。 本文将会介绍自动化测试工具、我们可以在 React 中进行哪些测试以及为什么需要这么做。让我们首先来介绍 Jest，这是最常用的由 FB 开发的JS 测试框架，FB 也是用它来给 React 应用进">
-<meta name="twitter:image" content="https://maoqxxmm.github.io/images/BC3BB459-597F-44FF-9475-7B743D29DBB4.png">
+<meta name="twitter:image" content="https://maoqxxmm.github.io/blog/images/BC3BB459-597F-44FF-9475-7B743D29DBB4.png">
 
 
 
@@ -444,7 +444,7 @@
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">describe(<span class="string">'Examining the syntax of Jest tests'</span>, () =&gt; &#123;</span><br><span class="line">   </span><br><span class="line">  it(<span class="string">'sums numbers'</span>, () =&gt; &#123;</span><br><span class="line">      expect(<span class="number">1</span> + <span class="number">2</span>).toEqual(<span class="number">3</span>);</span><br><span class="line">      expect(<span class="number">2</span> + <span class="number">2</span>).toEqual(<span class="number">4</span>);</span><br><span class="line">   &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 <p>上面第一眼看过去，你会发现这是个显而易见的测试，非常好。对测试来说，易读性非常重要。</p>
 <p>现在，保存一下，如果你已经跑起来了 Jest，那么就会收到一个类似于这样的信息：</p>
-<p><img src="/images/BC3BB459-597F-44FF-9475-7B743D29DBB4.png" alt=""></p>
+<p><img src="/blog/images/BC3BB459-597F-44FF-9475-7B743D29DBB4.png" alt=""></p>
 <p>现在我们来理解一下上面这个例子里使用的语法：</p>
 <ul>
 <li><code>describe()</code> : 这是一个可选方法，它可以用来包裹一组测试，让我们通过文字来描述它所包裹的这组测试的行为。正如截图所示，这些文字出现在了测试结果的头部。</li>
@@ -460,7 +460,7 @@
 <hr>
 <p>我们在终端得到每个测试的结果。绿色代表成功，红色代表失败。</p>
 <p>为了得到一个失败结果（希望不要有！），我们来改成  <code>expect(2 + 2).toEqual(5)</code>：</p>
-<p><img src="/images/95A1F546-0B48-432B-9F4E-A744ABAA2B46.png" alt=""></p>
+<p><img src="/blog/images/95A1F546-0B48-432B-9F4E-A744ABAA2B46.png" alt=""></p>
 <p>我们的终端显示了一些有用信息，包括挂在哪个文件，第几行，什么代码。</p>
 <h2 id="为什么要测试-2-个甚至多个加法，而不是一个就够了？"><a href="#为什么要测试-2-个甚至多个加法，而不是一个就够了？" class="headerlink" title="为什么要测试 2 个甚至多个加法，而不是一个就够了？"></a>为什么要测试 2 个甚至多个加法，而不是一个就够了？</h2><p>我们的第一个例子测试了2次加法，一次是 1 + 2，另一次是 2 + 2。这非常重要。为了解释原因，现在我们自己来实现一个加法：</p>
 <p><em>./math.js:</em></p>
