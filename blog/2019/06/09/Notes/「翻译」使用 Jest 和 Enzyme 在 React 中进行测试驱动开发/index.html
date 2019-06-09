@@ -104,7 +104,7 @@
 <meta property="og:site_name" content="毛球的博客">
 <meta property="og:description" content="原文链接  前言：你是如何开发的？本文涵盖了一系列 Enzyme 与 Jest 为 React 提供的测试工具，包括「快照测试」、「mock 函数」、「模拟事件」，以及如何测试组件的「功能」、「props」以及「state」。我们也会探讨其他方面的测试，包括 React 项目中的「抽象能力」和「逻辑隔离」。最后会附上一个测试清单，关于如何设计你自己的测试。  Enzyme 和 Jest  是确保">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-06-09T14:17:10.054Z">
+<meta property="og:updated_time" content="2019-06-09T14:18:55.450Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="「 翻译」使用 Jest 和 Enzyme 在 React 中进行测试驱动开发">
 <meta name="twitter:description" content="原文链接  前言：你是如何开发的？本文涵盖了一系列 Enzyme 与 Jest 为 React 提供的测试工具，包括「快照测试」、「mock 函数」、「模拟事件」，以及如何测试组件的「功能」、「props」以及「state」。我们也会探讨其他方面的测试，包括 React 项目中的「抽象能力」和「逻辑隔离」。最后会附上一个测试清单，关于如何设计你自己的测试。  Enzyme 和 Jest  是确保">
@@ -422,6 +422,7 @@
         <p> <a href="https://medium.com/@rossbulat/test-driven-development-in-react-with-jest-and-enzyme-2a6cf2cc3071" target="_blank" rel="noopener">原文链接</a> </p>
 <h2 id="前言：你是如何开发的？"><a href="#前言：你是如何开发的？" class="headerlink" title="前言：你是如何开发的？"></a>前言：你是如何开发的？</h2><p>本文涵盖了一系列 Enzyme 与 Jest 为 React 提供的测试工具，包括<strong>「快照测试」</strong>、<strong>「mock 函数」</strong>、<strong>「模拟事件」</strong>，以及如何测试组件的「功能」、「props」以及「state」。我们也会探讨其他方面的测试，包括 React 项目中的「抽象能力」和「逻辑隔离」。最后会附上一个测试清单，关于如何设计你自己的测试。</p>
 <p> <a href="https://airbnb.io/enzyme/" target="_blank" rel="noopener">Enzyme</a> 和 <a href="https://jestjs.io/" target="_blank" rel="noopener">Jest</a>  是确保代码处于高稳定性的关键工具，不论你是选用「测试驱动开发」还是「行为驱动开发」策略。在讨论工具前，让我们先来以抽象的方式回顾一下这两种开发模式的差异。</p>
+ <a id="more"></a>
 <h3 id="行为驱动开发（Behavioural-Driven-Development）"><a href="#行为驱动开发（Behavioural-Driven-Development）" class="headerlink" title="行为驱动开发（Behavioural Driven Development）"></a>行为驱动开发（Behavioural Driven Development）</h3><p>你需要花多少时间来测试你的 app 呢？是<strong>「在完成一个里程碑后」</strong>还是<strong>「在开发组件间隔」</strong>就测试呢？前者更关注 app 的行为，优先考虑业务逻辑完成而不是组件稳定性。你的测试代码会在业务逻辑开发完成后立刻编写，此类测试的结果将确定重构代码或修复任何漏洞的最佳途径。</p>
 <p>这种方式的本质是在写单元测试前对组件进行集成测试，或者使用像 Jest 这样的复杂框架进行任何的正式测试。这确实产生了更快的转变，并且被广泛使用。为什么会这样？这可能是因为商务会议很少会从测试驱动的角度来讨论 app，而是将重点放在最终的结果或是预期的行为上。考虑到这些因素，很自然地就会倾向于 BDD。会议记录会完全以行为为基础，在一个紧迫的时间表里完成任务。</p>
 <p>这可能对快速原型设计或概念验证可能非常有用，但对于大型 app 来说，复杂集成着一系列服务，或是有一个大的团队在同时贡献（区块链就是一个很好的例子），以测试为优先的开发方法，即「测试驱动开发」就很有意义。而这个方法也恰好适合 React 开发。</p>
