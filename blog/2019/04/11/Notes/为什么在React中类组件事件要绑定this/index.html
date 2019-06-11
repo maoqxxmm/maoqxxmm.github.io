@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/blog/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-icon-180x180.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/blog/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Muse',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="我们经常会需要在 constructor 里面对事件处理函数使用 bind() 来对 this 进行绑定。那么，为什么呢？本文将对此进行探究。 参考文章：This is why we need to bind event handlers in Class Components in React">
+<meta name="keywords" content="笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="为什么在 React 中类组件事件要绑定 this">
+<meta property="og:url" content="https://maoqxxmm.github.io/blog/2019/04/11/Notes/为什么在React中类组件事件要绑定this/index.html">
+<meta property="og:site_name" content="毛球的博客">
+<meta property="og:description" content="我们经常会需要在 constructor 里面对事件处理函数使用 bind() 来对 this 进行绑定。那么，为什么呢？本文将对此进行探究。 参考文章：This is why we need to bind event handlers in Class Components in React">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-06-11T15:45:11.141Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="为什么在 React 中类组件事件要绑定 this">
+<meta name="twitter:description" content="我们经常会需要在 constructor 里面对事件处理函数使用 bind() 来对 this 进行绑定。那么，为什么呢？本文将对此进行探究。 参考文章：This is why we need to bind event handlers in Class Components in React">
+
+
+
+
+
+
+  <link rel="canonical" href="https://maoqxxmm.github.io/blog/2019/04/11/Notes/为什么在React中类组件事件要绑定this/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>为什么在 React 中类组件事件要绑定 this | 毛球的博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">毛球的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://maoqxxmm.github.io/blog/blog/2019/04/11/Notes/为什么在React中类组件事件要绑定this/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="毛球">
+      <meta itemprop="description" content="你再不来，我要下雪了。">
+      <meta itemprop="image" content="/blog/images/apple-icon-180x180.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="毛球的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">为什么在 React 中类组件事件要绑定 this
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-11 23:23:35" itemprop="dateCreated datePublished" datetime="2019-04-11T23:23:35+08:00">2019-04-11</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/blog/categories/笔记/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>我们经常会需要在 <code>constructor</code> 里面对事件处理函数使用 <code>bind()</code> 来对 <code>this</code> 进行绑定。那么，为什么呢？本文将对此进行探究。</p>
+<p>参考文章：<a href="https://www.freecodecamp.org/news/this-is-why-we-need-to-bind-event-handlers-in-class-components-in-react-f7ea1a6f93eb/" target="_blank" rel="noopener">This is why we need to bind event handlers in Class Components in React
+</a></p>
+<a id="more"></a>
+<p>我们先来看个例子：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span></span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(props) &#123;</span><br><span class="line">      <span class="keyword">super</span>(props);</span><br><span class="line">    &#125;</span><br><span class="line">      </span><br><span class="line">    handleClick(event) &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="keyword">this</span>); <span class="comment">// 'this' is undefined</span></span><br><span class="line">    &#125;</span><br><span class="line">      </span><br><span class="line">    render() &#123;</span><br><span class="line">      <span class="keyword">return</span> (</span><br><span class="line">          &lt;button type=<span class="string">"button"</span> onClick=&#123;<span class="keyword">this</span>.handleClick&#125;&gt;</span><br><span class="line">            Click Me</span><br><span class="line">          &lt;<span class="regexp">/button&gt;</span></span><br><span class="line"><span class="regexp">      );</span></span><br><span class="line"><span class="regexp">    &#125;</span></span><br><span class="line"><span class="regexp">&#125;</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">ReactDOM.render(</span></span><br><span class="line"><span class="regexp">  &lt;Foo /</span>&gt;,</span><br><span class="line">  <span class="built_in">document</span>.getElementById(<span class="string">"app"</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure></p>
+<p>当我们点击按钮触发 <code>handleClick</code> 事件的时候，输出的 <code>this</code> 是 <code>undefined</code>。看上去似乎是这个函数丢失了自己的上下文。</p>
+<h1 id="在-JS-中，this-的绑定是如何工作的"><a href="#在-JS-中，this-的绑定是如何工作的" class="headerlink" title="在 JS 中，this 的绑定是如何工作的"></a>在 JS 中，this 的绑定是如何工作的</h1><p>我们都知道，函数内部的 <code>this</code> 的值取决于该函数如何被调用。</p>
+<h2 id="默认绑定"><a href="#默认绑定" class="headerlink" title="默认绑定"></a>默认绑定</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">display</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>); <span class="comment">// 'this' will point to the global object</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">display();</span><br></pre></td></tr></table></figure>
+<p>在这个例子中，我们直接调用了这个函数 <code>display()</code>。在非严格模式下，<code>this</code> 指向的是全局对象：window 或者 global。而在严格模式下，就是 <code>undefined</code>。</p>
+<h2 id="隐式绑定"><a href="#隐式绑定" class="headerlink" title="隐式绑定"></a>隐式绑定</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = &#123;</span><br><span class="line">    name: <span class="string">'Saurabh'</span>,</span><br><span class="line">    display: <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="keyword">this</span>.name); <span class="comment">// 'this' points to obj</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">obj.display(); <span class="comment">// Saurabh</span></span><br></pre></td></tr></table></figure>
+<p>当我们像这样用一个对象上下文来调用方法的时候，<code>display()</code> 里面的 <code>this</code> 就指向了 <code>obj</code>。</p>
+<p>但假如我们把这个函数赋值给了另一个变量，然后调用它，我们就会得到不同的结果：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">"uh oh! global"</span>;</span><br><span class="line"><span class="keyword">var</span> outerDisplay = obj.display;</span><br><span class="line">outerDisplay(); <span class="comment">// uh oh! global</span></span><br></pre></td></tr></table></figure></p>
+<p>在上面的例子中，当我们调用 <code>outerDisplay()</code> 的时候，并没有给他指定上下文。它只是一个简单的函数调用，并没有所有者对象。在这种情况下，<code>this</code> 的值就回退到了<strong>默认绑定</strong>。它指向了全局对象或者是 undefined。</p>
+<p>这种情况尤其会发生在把这种函数作为回调传给其他自定义函数、第三方库的函数或者是像 <code>secTimeout</code> 之类的原生函数。</p>
+<p>举个例子：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// A dummy implementation of setTimeout</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">setTimeout</span>(<span class="params">callback, delay</span>)</span>&#123;</span><br><span class="line"></span><br><span class="line">   <span class="comment">//wait for 'delay' milliseconds</span></span><br><span class="line">   callback();</span><br><span class="line">   </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">setTimeout( obj.display, <span class="number">1000</span> );</span><br></pre></td></tr></table></figure></p>
+<p>我们会发现，当调用 <code>setTimeout</code> 的时候，JS 把 <code>obj.display</code> 赋值给了 <code>callback</code> 这个参数。这个赋值操作，如同我们在前面看到的那样，会导致 <code>display()</code> 失去它的上下文。当这个回调最终在 <code>setTimeout</code> 里执行的时候，它里面的 <code>this</code> 就回退到了<strong>默认绑定</strong>。</p>
+<h2 id="显示绑定"><a href="#显示绑定" class="headerlink" title="显示绑定"></a>显示绑定</h2><p>为了避免这些情况，我们可以使用 <code>bind</code> 方法来给函数显示绑定一个 <code>this</code>：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">"uh oh! global"</span>;</span><br><span class="line">obj.display = obj.display.bind(obj); </span><br><span class="line"><span class="keyword">var</span> outerDisplay = obj.display;</span><br><span class="line">outerDisplay();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Saurabh</span></span><br></pre></td></tr></table></figure></p>
+<p>现在，当我们调用 <code>outerDisplay()</code> 的时候，它里面的 <code>this</code> 就指向了 <code>obj</code>。</p>
+<p>即使现在把 <code>obj.display</code> 作为回调，它里面的 <code>this</code> 依然指向的是 <code>obj</code>。</p>
+<p>在文章的开头，我们看到在组件 <code>Foo</code> 里，如果我们不绑定 <code>this</code>，那么调用的时候在函数里拿到的 <code>this</code> 就是 <code>undefined</code>。</p>
+<p>正如前面提到并解释的，这是因为在 JS 中 <code>this</code> 的绑定方式造成的，而非 React 的问题。让我们把 React 相关的代码移掉，用原生 JS 来模拟这个情况：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(name)&#123;</span><br><span class="line">      <span class="keyword">this</span>.name = name</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    display()&#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="keyword">this</span>.name);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo = <span class="keyword">new</span> Foo(<span class="string">'Saurabh'</span>);</span><br><span class="line">foo.display(); <span class="comment">// Saurabh</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// The assignment operation below simulates loss of context </span></span><br><span class="line"><span class="comment">// similar to passing the handler as a callback in the actual </span></span><br><span class="line"><span class="comment">// React Component</span></span><br><span class="line"><span class="keyword">var</span> display = foo.display; </span><br><span class="line">display(); <span class="comment">// TypeError: this is undefined</span></span><br></pre></td></tr></table></figure></p>
+<p>我们没有去模拟真实的事件和处理，而是使用了同义代码。正如我们在 React Component 示例中观察到的那样，由于将处理函数作为回调导致 <code>this</code> 失去了它的上下文，这和赋值操作是一个意思。这也是我们在非 React JS 代码中观察到的现象。</p>
+<blockquote>
+<p>”等一下！这个值不应该是指向全局对象的吗？我们并没有指定严格模式啊？“你可能会这么问。</p>
+</blockquote>
+<p>不，原因是：</p>
+<blockquote>
+<p>类声明和类表达式的主体是以严格模式执行的，即 constructor、static 和 prototype methods。Getter 和 setter 函数以严格模式执行。参考文章：(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes" target="_blank" rel="noopener">Classes - JavaScript | MDN</a>)</p>
+</blockquote>
+<p>所以，为了避免这个问题，我们需要像这样对 <code>this</code> 进行绑定：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(name)&#123;</span><br><span class="line">    <span class="keyword">this</span>.name = name</span><br><span class="line">    <span class="keyword">this</span>.display = <span class="keyword">this</span>.display.bind(<span class="keyword">this</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  display()&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>.name);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo = <span class="keyword">new</span> Foo(<span class="string">'Saurabh'</span>);</span><br><span class="line">foo.display(); <span class="comment">// Saurabh</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> display = foo.display;</span><br><span class="line">display(); <span class="comment">// Saurabh</span></span><br></pre></td></tr></table></figure></p>
+<p>当然，还有其他方法：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(name)&#123;</span><br><span class="line">      <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">    display()&#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="keyword">this</span>.name);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> foo = <span class="keyword">new</span> Foo(<span class="string">'Saurabh'</span>);</span><br><span class="line">foo.display = foo.display.bind(foo);</span><br><span class="line">foo.display(); <span class="comment">// Saurabh</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> display = foo.display;</span><br><span class="line">display(); <span class="comment">// Saurabh</span></span><br></pre></td></tr></table></figure></p>
+<p>但考虑到 <code>constructor</code> 里面是做一些初始化操作的地方，在那里进行绑定是最理想最有效的地方。</p>
+<p>为什么不用为箭头函数进行绑定呢？</p>
+<p>我们可以使用 2 种使用箭头函数的写法来进行绑定：</p>
+<ul>
+<li><p>公共类字段语法(实验功能)</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span></span>&#123;</span><br><span class="line">    handleClick = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="keyword">this</span>); </span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    render()&#123;</span><br><span class="line">      <span class="keyword">return</span> (</span><br><span class="line">          &lt;button type=<span class="string">"button"</span> onClick=&#123;<span class="keyword">this</span>.handleClick&#125;&gt;</span><br><span class="line">            Click Me</span><br><span class="line">          &lt;<span class="regexp">/button&gt;</span></span><br><span class="line"><span class="regexp">      );</span></span><br><span class="line"><span class="regexp">    &#125;</span></span><br><span class="line"><span class="regexp">&#125; </span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">ReactDOM.render(</span></span><br><span class="line"><span class="regexp">    &lt;Foo /</span>&gt;,</span><br><span class="line">    <span class="built_in">document</span>.getElementById(<span class="string">"app"</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在回调中使用箭头函数</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span></span>&#123;</span><br><span class="line">    handleClick(event)&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    render()&#123;</span><br><span class="line">      <span class="keyword">return</span> (</span><br><span class="line">          &lt;button type=<span class="string">"button"</span> onClick=&#123;(e) =&gt; <span class="keyword">this</span>.handleClick(e)&#125;&gt;</span><br><span class="line">            Click Me</span><br><span class="line">          &lt;<span class="regexp">/button&gt;</span></span><br><span class="line"><span class="regexp">      );</span></span><br><span class="line"><span class="regexp">    &#125;</span></span><br><span class="line"><span class="regexp">&#125;</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">ReactDOM.render(</span></span><br><span class="line"><span class="regexp">    &lt;Foo /</span>&gt;,</span><br><span class="line">    <span class="built_in">document</span>.getElementById(<span class="string">"app"</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>两者都使用了 ES6 中引入的箭头函数。当时用这些方法的时候，事件处理器已经自动绑定到组件实例上了，我们就不用再在 constructor 里进行绑定。</p>
+<p>原因是，在箭头函数中，<code>this</code> 是绑定在词法环境上的。这意味着，它使用封闭函数或全局范围的上下文作为它的值。</p>
+<p>在公共类字段语法示例中，箭头函数包含在 <code>Foo</code> 类（或构造函数）中，因此上下文就是组件实例，这就是我们想要的结果。</p>
+<p>长话短说，当我们在 React 的类组件中，像这样把事件处理函数作为回调传递的时候：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">"button"</span> <span class="attr">onClick</span>=<span class="string">&#123;this.handleClick&#125;</span>&gt;</span>Click Me<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>这个函数丢失了自己隐式绑定的上下文。被触发的时候，<code>this</code> 就回退到了<strong>默认绑定</strong>，并被设置为 <code>undefined</code>，因为类声明和原型方法运行在严格模式下。</p>
+<p>当我们在 constructor 里绑定了 <code>this</code> 后，就不用担心丢失上下文的问题了。</p>
+<p>箭头函数则不受此行为的影响，因为他们使用词法环境绑定了 <code>this</code>。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/笔记/" rel="tag"># 笔记</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2019/03/26/Notes/Redux简单实现/" rel="next" title="Redux简单实现">
+                <i class="fa fa-chevron-left"></i> Redux简单实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2019/05/22/Notes/「翻译」使用 Jest 和 Enzyme 进行 React 测试：介绍/" rel="prev" title="「翻译」使用Jest和Enzyme进行React测试:入门">
+                「翻译」使用Jest和Enzyme进行React测试:入门 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/blog/images/apple-icon-180x180.png" alt="毛球">
+            
+              <p class="site-author-name" itemprop="name">毛球</p>
+              <p class="site-description motion-element" itemprop="description">你再不来，我要下雪了。</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/blog/archives/">
+                
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/blog/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/blog/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#在-JS-中，this-的绑定是如何工作的"><span class="nav-number">1.</span> <span class="nav-text">在 JS 中，this 的绑定是如何工作的</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#默认绑定"><span class="nav-number">1.1.</span> <span class="nav-text">默认绑定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#隐式绑定"><span class="nav-number">1.2.</span> <span class="nav-text">隐式绑定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#显示绑定"><span class="nav-number">1.3.</span> <span class="nav-text">显示绑定</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">毛球</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v6.7.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/blog/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/blog/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/blog/js/src/schemes/muse.js?v=6.7.0"></script>
+
+
+
+  
+  <script src="/blog/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/blog/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/blog/js/src/bootstrap.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

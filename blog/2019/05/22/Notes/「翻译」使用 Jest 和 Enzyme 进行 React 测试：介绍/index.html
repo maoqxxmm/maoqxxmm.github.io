@@ -479,7 +479,7 @@
 <p><em>src/setupTest.js:</em></p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; configure &#125; <span class="keyword">from</span> <span class="string">'enzyme'</span>;</span><br><span class="line"><span class="keyword">import</span> Adapter <span class="keyword">from</span> <span class="string">'enzyme-adapter-react-16'</span>;</span><br><span class="line"></span><br><span class="line">configure(&#123; <span class="attr">adapter</span>: <span class="keyword">new</span> Adapter() &#125;);</span><br></pre></td></tr></table></figure>
 <p>现在，我们就可以开始使用 Enzyme 来进行测试了。举个例子，如果我们想要测试  <code>&lt;App /&gt;</code>  组件，那么就可以在  <code>App.test.js</code>  文件中加入：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; shallow &#125; <span class="keyword">from</span> <span class="string">'enzyme'</span>;</span><br><span class="line"><span class="keyword">import</span> App <span class="keyword">from</span> <span class="string">'./App'</span>;</span><br><span class="line"></span><br><span class="line">describe(<span class="string">'First React component test with Enzyme'</span>, () =&gt; &#123;</span><br><span class="line">   it(<span class="string">'renders without crashing'</span>, () =&gt; &#123;</span><br><span class="line">      shallow(&lt;App /&gt;);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; shallow &#125; <span class="keyword">from</span> <span class="string">'enzyme'</span>;</span><br><span class="line"><span class="keyword">import</span> App <span class="keyword">from</span> <span class="string">'./App'</span>;</span><br><span class="line"></span><br><span class="line">describe(<span class="string">'First React component test with Enzyme'</span>, () =&gt; &#123;</span><br><span class="line">   it(<span class="string">'renders without crashing'</span>, () =&gt; &#123;</span><br><span class="line">      shallow(<span class="xml"><span class="tag">&lt;<span class="name">App</span> /&gt;</span>);</span></span><br><span class="line"><span class="xml">    &#125;);</span></span><br><span class="line"><span class="xml">&#125;);</span></span><br></pre></td></tr></table></figure>
 <p>这里呢我们使用了  <code>shallow()</code>  断言方法。<code>shallow()</code>  会测试我们提供的组件，并且忽略任何它的子组件。如果我们有个  <code>&lt;Header /&gt;</code>  和  <code>&lt;Footer /&gt;</code>  在  <code>&lt;App /&gt;</code>  里，他们都会在测试中被忽略。</p>
 <p><code>shallow()</code>  属于单元测试。单元测试指的是只测试一个函数的测试。当我们测试的函数依赖于其他函数的时候，就成为了集成测试。同样的，如果我们测试一整个 React 组件树，那么就变成了一个集成测试。</p>
 <p>在 Enzyme 中，我们可以通过  <code>mount()</code>  来实现这样的测试。它是一种完整渲染的方式，把整个组件树和生命周期考虑进去。</p>
@@ -536,8 +536,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/blog/2019/03/26/Notes/Redux简单实现/" rel="next" title="Redux简单实现">
-                <i class="fa fa-chevron-left"></i> Redux简单实现
+              <a href="/blog/2019/04/11/Notes/为什么在React中类组件事件要绑定this/" rel="next" title="为什么在 React 中类组件事件要绑定 this">
+                <i class="fa fa-chevron-left"></i> 为什么在 React 中类组件事件要绑定 this
               </a>
             
           </div>
@@ -620,7 +620,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-count">4</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
