@@ -104,10 +104,13 @@
 <meta property="og:site_name" content="毛球的博客">
 <meta property="og:description" content="对于一个产品来说，性能问题是很影响用户体验的。为了提升性能，各个框架也是在不断地努力改进。比如 React v16 开始使用 Fiber，通过时间切片的方式来改善原来在调和阶段（Reconciler），使用递归生成完整 Virtual DOM 树而导致渲染引擎被阻塞的问题。 框架的归框架，开发的归开发。开发能在这个基础上再做些什么性能优化呢？本文以 React 为例。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-07-01T15:52:33.900Z">
+<meta property="og:image" content="https://reactjs.org/static/devtools-prod-d0f767f80866431ccdec18f200ca58f1-1e9b4.png">
+<meta property="og:image" content="https://reactjs.org/static/devtools-dev-e434ce2f7e64f63e597edf03f4465694-1e9b4.png">
+<meta property="og:updated_time" content="2019-07-01T17:11:03.726Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="React 性能优化方案探讨">
 <meta name="twitter:description" content="对于一个产品来说，性能问题是很影响用户体验的。为了提升性能，各个框架也是在不断地努力改进。比如 React v16 开始使用 Fiber，通过时间切片的方式来改善原来在调和阶段（Reconciler），使用递归生成完整 Virtual DOM 树而导致渲染引擎被阻塞的问题。 框架的归框架，开发的归开发。开发能在这个基础上再做些什么性能优化呢？本文以 React 为例。">
+<meta name="twitter:image" content="https://reactjs.org/static/devtools-prod-d0f767f80866431ccdec18f200ca58f1-1e9b4.png">
 
 
 
@@ -423,7 +426,14 @@
 <p>框架的归框架，开发的归开发。开发能在这个基础上再做些什么性能优化呢？本文以 React 为例。<br><a id="more"></a></p>
 <hr>
 <p>React 官网其实已经专门用一个页面来介绍如何做性能优化了：<a href="https://reactjs.org/docs/optimizing-performance.html#use-the-production-build" target="_blank" rel="noopener">链接</a>。我们来逐一看看。</p>
-
+<h2 id="使用生产版本"><a href="#使用生产版本" class="headerlink" title="使用生产版本"></a>使用生产版本</h2><p>为什么要使用生产版本呢？官方给出的解释说，React 内部提供了很多错误处理辅助，这些对开发来说非常有用，但无疑让 React 本身变得庞大、缓慢。在使用生产版本后，就不会有这方面的问题。</p>
+<h3 id="Webpack-配置"><a href="#Webpack-配置" class="headerlink" title="Webpack 配置"></a>Webpack 配置</h3><p>如果是使用 Webpack，按照这个方式配置：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// webpack v4</span></span><br><span class="line"><span class="keyword">const</span> TerserPlugin = <span class="built_in">require</span>(<span class="string">'terser-webpack-plugin'</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  mode: <span class="string">'production'</span></span><br><span class="line">  optimization: &#123;</span><br><span class="line">    minimizer: [<span class="keyword">new</span> TerserPlugin(&#123; <span class="comment">/* additional options here */</span> &#125;)],</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// webpack v3</span></span><br><span class="line"><span class="keyword">new</span> webpack.DefinePlugin(&#123;</span><br><span class="line">    <span class="string">'process.env.NODE_ENV'</span>: <span class="built_in">JSON</span>.stringify(<span class="string">'production'</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<h3 id="确认使用版本"><a href="#确认使用版本" class="headerlink" title="确认使用版本"></a>确认使用版本</h3><p>如何确认正在使用的版本？我们需要先安装插件 <a href="https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi" target="_blank" rel="noopener">React Developer Tools for Chrome</a>。</p>
+<p>如果我们在访问页面的时候，发现是这个样子的，就说明是生产版本：<br><img src="https://reactjs.org/static/devtools-prod-d0f767f80866431ccdec18f200ca58f1-1e9b4.png" alt="生产版本下的插件示意图"></p>
+<p>如果是这个样子的，就说明是开发版本：<br><img src="https://reactjs.org/static/devtools-dev-e434ce2f7e64f63e597edf03f4465694-1e9b4.png" alt="开发版本下的插件示意图"></p>
+<h2 id="使用-Chrome-性能分析工具"><a href="#使用-Chrome-性能分析工具" class="headerlink" title="使用 Chrome 性能分析工具"></a>使用 Chrome 性能分析工具</h2><h2 id="使用-DevTools-性能分析工具"><a href="#使用-DevTools-性能分析工具" class="headerlink" title="使用 DevTools 性能分析工具"></a>使用 DevTools 性能分析工具</h2><h2 id="虚拟化长列表"><a href="#虚拟化长列表" class="headerlink" title="虚拟化长列表"></a>虚拟化长列表</h2><h2 id="避免协调"><a href="#避免协调" class="headerlink" title="避免协调"></a>避免协调</h2><hr>
+<p>除了 React 介绍的这些与框架相关的方法以外，还有一些其他方面的优化工作可以考虑。</p>
+<h2 id="Web-Worker"><a href="#Web-Worker" class="headerlink" title="Web Worker"></a>Web Worker</h2>
       
     </div>
 
@@ -512,8 +522,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
             
@@ -591,6 +610,23 @@
         </div>
       </div>
 
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用生产版本"><span class="nav-number">1.</span> <span class="nav-text">使用生产版本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Webpack-配置"><span class="nav-number">1.1.</span> <span class="nav-text">Webpack 配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#确认使用版本"><span class="nav-number">1.2.</span> <span class="nav-text">确认使用版本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-Chrome-性能分析工具"><span class="nav-number">2.</span> <span class="nav-text">使用 Chrome 性能分析工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-DevTools-性能分析工具"><span class="nav-number">3.</span> <span class="nav-text">使用 DevTools 性能分析工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#虚拟化长列表"><span class="nav-number">4.</span> <span class="nav-text">虚拟化长列表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#避免协调"><span class="nav-number">5.</span> <span class="nav-text">避免协调</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Web-Worker"><span class="nav-number">6.</span> <span class="nav-text">Web Worker</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
       
 
       
