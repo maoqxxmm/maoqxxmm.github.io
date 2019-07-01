@@ -104,7 +104,7 @@
 <meta property="og:site_name" content="毛球的博客">
 <meta property="og:description" content="引言性能优化一直都是吾辈努力的方向。React 官网其实已经介绍了如何去优化 React 项目（Optimizing Performance – React）。这次，我们看上了「虚拟化长列表」。 （感觉要写很久……">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-06-23T15:58:56.063Z">
+<meta property="og:updated_time" content="2019-07-01T14:46:42.990Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="「滴答清单」的虚拟化列表实践（未完待续）">
 <meta name="twitter:description" content="引言性能优化一直都是吾辈努力的方向。React 官网其实已经介绍了如何去优化 React 项目（Optimizing Performance – React）。这次，我们看上了「虚拟化长列表」。 （感觉要写很久……">
@@ -435,7 +435,7 @@
 <p><strong>key</strong>：作为分组的唯一标识</p>
 <p><strong>list</strong>： 分组下已排序的 <code>Task</code> 数组</p>
 <p><strong>collapse</strong>:：业务相关状态，标识 <code>Section</code> 展开收起的状态</p>
-<h1 id="虚拟化设计"><a href="#虚拟化设计" class="headerlink" title="虚拟化设计"></a>虚拟化设计</h1><p>下面我们将一步步进行虚拟化的设计。先来做一点准备工作：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">"react"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">List</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Compoennt</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(props) &#123;</span><br><span class="line">        <span class="keyword">super</span>(props);</span><br><span class="line">        <span class="keyword">this</span>.state = &#123;</span><br><span class="line">            startIndex: [<span class="number">0</span>, <span class="number">0</span>],</span><br><span class="line">            endIndex: [<span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    render() &#123;</span><br><span class="line">        <span class="keyword">return</span> (</span><br><span class="line">            &lt;div className=<span class="string">"list-scroller"</span>&gt;</span><br><span class="line">                &lt;div className=<span class="string">"list"</span>&gt;</span><br><span class="line">                    &#123;<span class="keyword">this</span>.renderSections()&#125;                </span><br><span class="line">                &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">            &lt;/</span>div&gt;</span><br><span class="line">        )</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    renderSections() &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="虚拟化设计"><a href="#虚拟化设计" class="headerlink" title="虚拟化设计"></a>虚拟化设计</h1><p>下面我们将一步步进行虚拟化的设计。先来做一点准备工作：<br><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">"react"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">List</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Compoennt</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(props) &#123;</span><br><span class="line">        <span class="keyword">super</span>(props);</span><br><span class="line">        <span class="keyword">this</span>.state = &#123;</span><br><span class="line">            startIndex: [<span class="number">0</span>, <span class="number">0</span>],</span><br><span class="line">            endIndex: [<span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    render() &#123;</span><br><span class="line">        <span class="keyword">return</span> (</span><br><span class="line">            &lt;div className=<span class="string">"list-scroller"</span>&gt;</span><br><span class="line">                &lt;div className=<span class="string">"list"</span>&gt;</span><br><span class="line">                    &#123;<span class="keyword">this</span>.renderSections()&#125;                </span><br><span class="line">                &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">            &lt;/</span>div&gt;</span><br><span class="line">        )</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    renderSections() &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>我们创建了一个 <strong>List</strong> 组件，并在 <strong>state</strong> 上存放了 2 个状态：开始渲染和结束渲染的坐标。因为在我们的业务里只有 3 层结构，所以通过 2 个下标就能找到对应的 <code>Task</code> ，例如 <code>SectionList[a].list[b]</code>。</p>
 
       
@@ -482,6 +482,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2019/07/01/Notes/React 性能优化方案探讨/" rel="prev" title="React 性能优化方案探讨">
+                React 性能优化方案探讨 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -553,7 +557,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-count">9</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

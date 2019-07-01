@@ -96,23 +96,25 @@
 
 
 
-  <meta name="description" content="你再不来，我要下雪了。">
-<meta property="og:type" content="website">
-<meta property="og:title" content="毛球的博客">
-<meta property="og:url" content="https://maoqxxmm.github.io/blog/tags/笔记/index.html">
+  <meta name="description" content="对于一个产品来说，性能问题是很影响用户体验的。为了提升性能，各个框架也是在不断地努力改进。比如 React v16 开始使用 Fiber，通过时间切片的方式来改善原来在调和阶段（Reconciler），使用递归生成完整 Virtual DOM 树而导致渲染引擎被阻塞的问题。 框架的归框架，开发的归开发。开发能在这个基础上再做些什么性能优化呢？本文以 React 为例。">
+<meta name="keywords" content="笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="React 性能优化方案探讨">
+<meta property="og:url" content="https://maoqxxmm.github.io/blog/2019/07/01/Notes/React 性能优化方案探讨/index.html">
 <meta property="og:site_name" content="毛球的博客">
-<meta property="og:description" content="你再不来，我要下雪了。">
+<meta property="og:description" content="对于一个产品来说，性能问题是很影响用户体验的。为了提升性能，各个框架也是在不断地努力改进。比如 React v16 开始使用 Fiber，通过时间切片的方式来改善原来在调和阶段（Reconciler），使用递归生成完整 Virtual DOM 树而导致渲染引擎被阻塞的问题。 框架的归框架，开发的归开发。开发能在这个基础上再做些什么性能优化呢？本文以 React 为例。">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-07-01T15:52:33.900Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="毛球的博客">
-<meta name="twitter:description" content="你再不来，我要下雪了。">
+<meta name="twitter:title" content="React 性能优化方案探讨">
+<meta name="twitter:description" content="对于一个产品来说，性能问题是很影响用户体验的。为了提升性能，各个框架也是在不断地努力改进。比如 React v16 开始使用 Fiber，通过时间切片的方式来改善原来在调和阶段（Reconciler），使用递归生成完整 Virtual DOM 树而导致渲染引擎被阻塞的问题。 框架的归框架，开发的归开发。开发能在这个基础上再做些什么性能优化呢？本文以 React 为例。">
 
 
 
 
 
 
-  <link rel="canonical" href="https://maoqxxmm.github.io/blog/tags/笔记/">
+  <link rel="canonical" href="https://maoqxxmm.github.io/blog/2019/07/01/Notes/React 性能优化方案探讨/">
 
 
 
@@ -122,7 +124,7 @@
   };
 </script>
 
-  <title>标签: 笔记 | 毛球的博客</title>
+  <title>React 性能优化方案探讨 | 毛球的博客</title>
   
 
 
@@ -170,7 +172,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
@@ -225,7 +227,7 @@
         
         
           
-          <li class="menu-item menu-item-tags menu-item-active">
+          <li class="menu-item menu-item-tags">
 
     
     
@@ -281,25 +283,6 @@
   
     
 
-    
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-    
-
-  
-
-
   
 
   
@@ -324,212 +307,191 @@
           <div id="content" class="content">
             
 
+  <div id="posts" class="posts-expand">
+    
+
+  
+
   
   
   
-  <div class="post-block tag">
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>笔记<small>标签</small>
-        </h1>
-      </div>
-
-      
-        
+  
 
   <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://maoqxxmm.github.io/blog/blog/2019/07/01/Notes/React 性能优化方案探讨/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="毛球">
+      <meta itemprop="description" content="你再不来，我要下雪了。">
+      <meta itemprop="image" content="/blog/images/apple-icon-180x180.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="毛球的博客">
+    </span>
+
+    
+      <header class="post-header">
+
         
-          <a class="post-title-link" href="/blog/2019/07/01/Notes/React 性能优化方案探讨/" itemprop="url">
-            
-              <span itemprop="name">React 性能优化方案探讨</span>
-            
-          </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">React 性能优化方案探讨
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-07-01T20:15:13+08:00" content="2019-07-01">
-          07-01
-        </time>
-      </div>
+              
+            
+          </h1>
+        
 
-    </header>
-  </article>
+        <div class="post-meta">
+          <span class="post-time">
 
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-01 20:15:13" itemprop="dateCreated datePublished" datetime="2019-07-01T20:15:13+08:00">2019-07-01</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/blog/categories/笔记/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-        
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-          <a class="post-title-link" href="/blog/2019/06/14/Notes/「滴答清单」的虚拟化列表实践/" itemprop="url">
-            
-              <span itemprop="name">「滴答清单」的虚拟化列表实践（未完待续）</span>
-            
-          </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-06-14T11:56:55+08:00" content="2019-06-14">
-          06-14
-        </time>
-      </div>
-
-    </header>
-  </article>
-
+      
 
       
-        
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-          <a class="post-title-link" href="/blog/2019/04/11/Notes/为什么在React中类组件事件要绑定this/" itemprop="url">
-            
-              <span itemprop="name">为什么在 React 中类组件事件要绑定 this</span>
-            
-          </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-04-11T23:23:35+08:00" content="2019-04-11">
-          04-11
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-      
-        
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-          <a class="post-title-link" href="/blog/2019/03/30/Notes/Redux 简单实现（四）：react-redux/" itemprop="url">
-            
-              <span itemprop="name">Redux 简单实现（四）：react-redux</span>
-            
-          </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-03-30T14:05:28+08:00" content="2019-03-30">
-          03-30
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-      
-        
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-          <a class="post-title-link" href="/blog/2019/03/24/Notes/Redux 简单实现（三）：中间件/" itemprop="url">
-            
-              <span itemprop="name">Redux 简单实现（三）：中间件</span>
-            
-          </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-03-24T10:18:13+08:00" content="2019-03-24">
-          03-24
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-      
-        
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-          <a class="post-title-link" href="/blog/2019/03/16/Notes/Redux 简单实现（二）：多文件协作/" itemprop="url">
-            
-              <span itemprop="name">Redux 简单实现（二）：多文件协作</span>
-            
-          </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-03-16T16:28:13+08:00" content="2019-03-16">
-          03-16
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-      
-        
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-          <a class="post-title-link" href="/blog/2019/03/10/Notes/Redux 简单实现（一）：状态管理器/" itemprop="url">
-            
-              <span itemprop="name">Redux 简单实现（一）：状态管理器</span>
-            
-          </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-03-10T15:04:28+08:00" content="2019-03-10">
-          03-10
-        </time>
-      </div>
-
-    </header>
-  </article>
-
+        <p>对于一个产品来说，性能问题是很影响用户体验的。为了提升性能，各个框架也是在不断地努力改进。比如 React v16 开始使用 Fiber，通过时间切片的方式来改善原来在调和阶段（Reconciler），使用递归生成完整 Virtual DOM 树而导致渲染引擎被阻塞的问题。</p>
+<p>框架的归框架，开发的归开发。开发能在这个基础上再做些什么性能优化呢？本文以 React 为例。<br><a id="more"></a></p>
+<hr>
+<p>React 官网其实已经专门用一个页面来介绍如何做性能优化了：<a href="https://reactjs.org/docs/optimizing-performance.html#use-the-production-build" target="_blank" rel="noopener">链接</a>。我们来逐一看看。</p>
 
       
     </div>
 
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/笔记/" rel="tag"># 笔记</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2019/06/14/Notes/「滴答清单」的虚拟化列表实践/" rel="next" title="「滴答清单」的虚拟化列表实践（未完待续）">
+                <i class="fa fa-chevron-left"></i> 「滴答清单」的虚拟化列表实践（未完待续）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
+
+  </div>
 
 
           </div>
           
+
+  
+
+
 
         </div>
         
@@ -756,6 +718,10 @@
 
 
   
+  <script src="/blog/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/blog/js/src/post-details.js?v=6.7.0"></script>
+
+
 
   
 
@@ -766,6 +732,8 @@
 
   
 
+
+  
 
 
   
