@@ -106,7 +106,15 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://reactjs.org/static/devtools-prod-d0f767f80866431ccdec18f200ca58f1-1e9b4.png">
 <meta property="og:image" content="https://reactjs.org/static/devtools-dev-e434ce2f7e64f63e597edf03f4465694-1e9b4.png">
-<meta property="og:updated_time" content="2019-07-01T17:11:03.726Z">
+<meta property="og:image" content="https://reactjs.org/static/react-perf-chrome-timeline-64d522b74fb585f1abada9801f85fa9d-dcc89.png">
+<meta property="og:image" content="https://reactjs.org/static/devtools-highlight-updates-97eda4825de476af4515435a0c36ca78-a62e3.png">
+<meta property="og:image" content="https://reactjs.org/highlight-updates-example-7a42123e91b1b460b1a65605d6ff0d2b.gif">
+<meta property="og:image" content="https://i.imgur.com/May9hwb.png">
+<meta property="og:image" content="https://i.imgur.com/sGdOQsD.png">
+<meta property="og:image" content="https://i.imgur.com/h3Q2sYz.png">
+<meta property="og:image" content="https://i.imgur.com/8PviSsR.png">
+<meta property="og:image" content="https://i.imgur.com/vtBX4On.png">
+<meta property="og:updated_time" content="2019-07-02T13:33:14.065Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="React 性能优化方案探讨">
 <meta name="twitter:description" content="对于一个产品来说，性能问题是很影响用户体验的。为了提升性能，各个框架也是在不断地努力改进。比如 React v16 开始使用 Fiber，通过时间切片的方式来改善原来在调和阶段（Reconciler），使用递归生成完整 Virtual DOM 树而导致渲染引擎被阻塞的问题。 框架的归框架，开发的归开发。开发能在这个基础上再做些什么性能优化呢？本文以 React 为例。">
@@ -431,9 +439,46 @@
 <h3 id="确认使用版本"><a href="#确认使用版本" class="headerlink" title="确认使用版本"></a>确认使用版本</h3><p>如何确认正在使用的版本？我们需要先安装插件 <a href="https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi" target="_blank" rel="noopener">React Developer Tools for Chrome</a>。</p>
 <p>如果我们在访问页面的时候，发现是这个样子的，就说明是生产版本：<br><img src="https://reactjs.org/static/devtools-prod-d0f767f80866431ccdec18f200ca58f1-1e9b4.png" alt="生产版本下的插件示意图"></p>
 <p>如果是这个样子的，就说明是开发版本：<br><img src="https://reactjs.org/static/devtools-dev-e434ce2f7e64f63e597edf03f4465694-1e9b4.png" alt="开发版本下的插件示意图"></p>
-<h2 id="使用-Chrome-性能分析工具"><a href="#使用-Chrome-性能分析工具" class="headerlink" title="使用 Chrome 性能分析工具"></a>使用 Chrome 性能分析工具</h2><h2 id="使用-DevTools-性能分析工具"><a href="#使用-DevTools-性能分析工具" class="headerlink" title="使用 DevTools 性能分析工具"></a>使用 DevTools 性能分析工具</h2><h2 id="虚拟化长列表"><a href="#虚拟化长列表" class="headerlink" title="虚拟化长列表"></a>虚拟化长列表</h2><h2 id="避免协调"><a href="#避免协调" class="headerlink" title="避免协调"></a>避免协调</h2><hr>
-<p>除了 React 介绍的这些与框架相关的方法以外，还有一些其他方面的优化工作可以考虑。</p>
-<h2 id="Web-Worker"><a href="#Web-Worker" class="headerlink" title="Web Worker"></a>Web Worker</h2>
+<h2 id="使用-Chrome-性能分析工具"><a href="#使用-Chrome-性能分析工具" class="headerlink" title="使用 Chrome 性能分析工具"></a>使用 Chrome 性能分析工具</h2><p>Chrome 性能分析工具大家应该都比较熟悉了，它是我们最常用的。在开发模式下，我们可以在这里看到组件是如何 mount、update 和 unmount 的。</p>
+<p><img src="https://reactjs.org/static/react-perf-chrome-timeline-64d522b74fb585f1abada9801f85fa9d-dcc89.png" alt="Chrome 性能分析工具下的组件状态"></p>
+<p>具体操作如下：</p>
+<ol>
+<li>暂时关掉所有插件，特别是 <strong>React DevTools</strong>，因为他们会显著影响测试结果（不过根据我的经验来看，如果只是做相对比较的话不需要这样，只是要知道这里有哪些时间是因为插件消耗的）</li>
+<li>确保你的代码处于开发模式</li>
+<li>打开 <strong>Performance</strong> 标签，开始录制</li>
+<li>进行你想要测试的操作，但最好不要超过 20 秒，否则 Chrome 可能会无响应</li>
+<li>停止录制</li>
+<li>你可以在 <strong>User Timing</strong> 标签处看到 React 事件</li>
+</ol>
+<p>需要注意的是，生产模式下的运行速度会更快一些。但相比于绝对值，我们在开发模式下进行分析的时候，更关注于无关的组件是否被错误地更新了，以及是否更新地太频繁、太深入了。</p>
+<h2 id="使用-DevTools-性能分析工具"><a href="#使用-DevTools-性能分析工具" class="headerlink" title="使用 DevTools 性能分析工具"></a>使用 DevTools 性能分析工具</h2><p><code>react-dom</code> 在 v16.5 以后为 Rect DevTools 提供了更强的性能分析工具。官网推荐了一篇 <a href="https://reactjs.org/blog/2018/09/10/introducing-the-react-profiler.html" target="_blank" rel="noopener">文章</a> 和一个 <a href="https://www.youtube.com/watch?v=nySib7ipZdk" target="_blank" rel="noopener">视频</a> 作为介绍。用法和 Chrome 自己的也差不多。</p>
+<h2 id="虚拟化长列表"><a href="#虚拟化长列表" class="headerlink" title="虚拟化长列表"></a>虚拟化长列表</h2><p>如果你的应用需要渲染很长的列表数据，而渲染它们又很耗时的话可以试试做成虚拟化。简而言之就是只渲染可视区域部分的数据，随着滚动而不断更新这部分数据。</p>
+<p>这样的好处是缩短了渲染组件的时间以及减少了页面上的节点数量。但其实也会引入一些问题。假如你渲染某一条本身就需要挺多时间的，而快速滚动的时候就会来不及渲染。这时用户就只能看到一大片白屏，等一段时间后才会把节点渲染出来。当然，可以通过一些手段来减少快速滚动时渲染节点的开销，但不可能完全消除影响。这可以说是虚拟化的「原罪」。</p>
+<p>开源社区已经有很多虚拟化方案了，React 官方推荐了 <a href="https://react-window.now.sh/" target="_blank" rel="noopener">react-window</a>、<a href="https://bvaughn.github.io/react-virtualized/" target="_blank" rel="noopener">react-virtualized</a>。原理其实挺简单的，我这里也有一篇文章做了介绍：<a href="/blog/2019/06/14/Notes/「滴答清单」的虚拟化列表实践/">「滴答清单」的虚拟化列表实践</a>。</p>
+<h2 id="避免-Reconciliation（协调）"><a href="#避免-Reconciliation（协调）" class="headerlink" title="避免 Reconciliation（协调）"></a>避免 Reconciliation（协调）</h2><p>什么是 Reconciliation？先看看这篇<a href="https://reactjs.org/docs/reconciliation.html" target="_blank" rel="noopener">文章</a>。</p>
+<p>前面我们介绍了性能分析工具，通过它们我们可以知道影响性能的原因。而经常出现的情况就是，部分组件本来可以跳过更新，却意外地被更新了。怎样快速排查呢？</p>
+<p>在开发者工具的 React 标签下（这是由 React DevTools 创建的），我们可以看到 <strong>Highlight Updates</strong>。勾上它，然后在页面里进行操作，你就会看到一些边框在闪烁，那些就代表着对应的组件发生了更新。<br><img src="https://reactjs.org/static/devtools-highlight-updates-97eda4825de476af4515435a0c36ca78-a62e3.png" alt=""><br><img src="https://reactjs.org/highlight-updates-example-7a42123e91b1b460b1a65605d6ff0d2b.gif" alt=""></p>
+<p>以上面为例，虽然 React 最终并不会更新输入框以外的其他节点，但我们看到其他的组件确实是更新了。为什么呢？我们先来看看 React 的更新机制是怎么样的。</p>
+<p><img src="https://i.imgur.com/May9hwb.png" alt=""><br><img src="https://i.imgur.com/sGdOQsD.png" alt=""><br><img src="https://i.imgur.com/h3Q2sYz.png" alt=""><br><img src="https://i.imgur.com/8PviSsR.png" alt=""></p>
+<p>上面这些图的意思是，当 C6 状态发生变化的时候，会不断向上找到根节点 C1，然后 C1 的子节点们就都会触发 re-render。我们写 React 应用的时候一般也就 1 个根节点，也就意味着，只要有一个组件发生了更新，那么整棵树就都会触发到 re-render，不管是否真的需要。</p>
+<p>在应用比较简单的时候，这不是个什么大问题。但当你开始注意到这方面的影响了以后，就需要做点额外的工作了。</p>
+<h3 id="shouldComponentUpdate"><a href="#shouldComponentUpdate" class="headerlink" title="shouldComponentUpdate"></a>shouldComponentUpdate</h3><p>在 React 组件的生命周期里，它为我们预留了 <code>shouldComponentUpdate</code> 这个钩子。它会在 re-render 之前触发。默认返回值是 <code>true</code>。假如你知道，某些情况下你的组件并不需要更新，那么就可以返回 <code>false</code>，以此来跳过 re-render。</p>
+<p><img src="https://i.imgur.com/vtBX4On.png" alt=""></p>
+<p><strong>SCU:</strong> shouldComponentUpdate?</p>
+<p><strong>vDOMEq:</strong> are virtual DOMs equivalent?</p>
+<p>如上图所示，最后就如同我们希望的那样，C2 的 SCU 返回了 false，于是它并不需要进行更新，连带着 C4 和 C5 的 SCU 都不需要触发了。C7 的 SCU 也同样返回了 false。而 C8 的 SCU 返回了 true（我们先假设是这样的），此时又会重新调用一次 C8 的 render 方法。出来的结果和之前的一样，所以事实上 React 也不会去更新它的真实 DOM 节点。</p>
+<p>每个组件都要这样写一遍吗？不，React 为我们提供了一个通用方案。</p>
+<h3 id="PureComponent"><a href="#PureComponent" class="headerlink" title="PureComponent"></a>PureComponent</h3><p><code>React.PureComponent</code> 和 <code>React.Component</code> 的区别就在于，<code>PureComponent</code> 重写了 <code>shouldComponentUpdate</code> 方法，使用<strong>浅比较</strong>的方式对前后的 props 和 state 进行了对比。大概类似于这个样子：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">shouldComponentUpdate</span>(<span class="params">nextProps, nextState</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> thisProps = <span class="keyword">this</span>.props || &#123;&#125;,</span><br><span class="line">        thisState = <span class="keyword">this</span>.state || &#123;&#125;;</span><br><span class="line">    nextProps = nextProps || &#123;&#125;;</span><br><span class="line">    nextState = nextState || &#123;&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (</span><br><span class="line">        <span class="built_in">Object</span>.keys(thisProps).length !== <span class="built_in">Object</span>.keys(nextProps).length ||</span><br><span class="line">        <span class="built_in">Object</span>.keys(thisState).length !== <span class="built_in">Object</span>.keys(nextState).length</span><br><span class="line">    ) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> propsKey <span class="keyword">in</span> nextProps) &#123;</span><br><span class="line">        <span class="keyword">if</span> (thisProps[propsKey] !== nextProps[propsKey]) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> stateKey <span class="keyword">in</span> nextState) &#123;</span><br><span class="line">        <span class="keyword">if</span> (thisState[stateKey] !== nextState[stateKey]) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="不要传入用不到的-props"><a href="#不要传入用不到的-props" class="headerlink" title="不要传入用不到的 props"></a>不要传入用不到的 props</h3><p>虽然是一句很简单的废话，「不要传入用不到的 props」，但就实际开发过程来看还是偶尔会有这种问题出现。这里举一些例子：</p>
+<ul>
+<li>不要随意用展开符来传 props，就像：<code>&lt;Button {...object} /&gt;</code>，当然如果能确保没问题的话也还行</li>
+<li>如果使用了 react-redux，对组件使用 connect 传递数据的时候，最好能直接传最终的值，而不是直接从 store 里拿了对象，否则可能会被其他数据干扰。另外，如果传过来的值是需要计算后的对象，推荐使用 <a href="https://github.com/reduxjs/reselect" target="_blank" rel="noopener">reselect</a> 进行缓存</li>
+</ul>
+<hr>
+<p>除了 React 介绍的这些与其自身相关的方法以外，还有一些其他方面的优化工作可以考虑，不过这些就和使用什么库、什么框架无关了，只是一些通用的手段。</p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><h3 id="Web-Worker"><a href="#Web-Worker" class="headerlink" title="Web Worker"></a>Web Worker</h3><p>我们都知道，JS 在浏览器里执行是单线程的。同时，JS 线程工作的时候，UI 线程就会等待。假如 JS 占用了太久的时间，视图就得不到更新，反馈到用户那里就是掉帧、卡顿。而 Web Worker 则提供了一个独立的线程，我们可以在那里进行复杂的计算、与服务器进行通讯等等，再通过 message 与主线程进行数据传输。</p>
+<h3 id="减少回流重绘"><a href="#减少回流重绘" class="headerlink" title="减少回流重绘"></a>减少回流重绘</h3><p>这个学问就大了。而且，很多时候也恰恰就是因为不合理地使用 CSS，或者使用 JS 对样式做一些改动，导致页面严重卡顿。本文就不再展开。</p>
+
       
     </div>
 
@@ -621,7 +666,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用生产版本"><span class="nav-number">1.</span> <span class="nav-text">使用生产版本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Webpack-配置"><span class="nav-number">1.1.</span> <span class="nav-text">Webpack 配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#确认使用版本"><span class="nav-number">1.2.</span> <span class="nav-text">确认使用版本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-Chrome-性能分析工具"><span class="nav-number">2.</span> <span class="nav-text">使用 Chrome 性能分析工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-DevTools-性能分析工具"><span class="nav-number">3.</span> <span class="nav-text">使用 DevTools 性能分析工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#虚拟化长列表"><span class="nav-number">4.</span> <span class="nav-text">虚拟化长列表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#避免协调"><span class="nav-number">5.</span> <span class="nav-text">避免协调</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Web-Worker"><span class="nav-number">6.</span> <span class="nav-text">Web Worker</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用生产版本"><span class="nav-number">1.</span> <span class="nav-text">使用生产版本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Webpack-配置"><span class="nav-number">1.1.</span> <span class="nav-text">Webpack 配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#确认使用版本"><span class="nav-number">1.2.</span> <span class="nav-text">确认使用版本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-Chrome-性能分析工具"><span class="nav-number">2.</span> <span class="nav-text">使用 Chrome 性能分析工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-DevTools-性能分析工具"><span class="nav-number">3.</span> <span class="nav-text">使用 DevTools 性能分析工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#虚拟化长列表"><span class="nav-number">4.</span> <span class="nav-text">虚拟化长列表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#避免-Reconciliation（协调）"><span class="nav-number">5.</span> <span class="nav-text">避免 Reconciliation（协调）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#shouldComponentUpdate"><span class="nav-number">5.1.</span> <span class="nav-text">shouldComponentUpdate</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PureComponent"><span class="nav-number">5.2.</span> <span class="nav-text">PureComponent</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不要传入用不到的-props"><span class="nav-number">5.3.</span> <span class="nav-text">不要传入用不到的 props</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他"><span class="nav-number">6.</span> <span class="nav-text">其他</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Web-Worker"><span class="nav-number">6.1.</span> <span class="nav-text">Web Worker</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#减少回流重绘"><span class="nav-number">6.2.</span> <span class="nav-text">减少回流重绘</span></a></li></ol></li></ol></div>
             
 
           </div>
